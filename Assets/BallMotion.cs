@@ -6,8 +6,8 @@ using Unity.Mathematics;
 
 public class BallMotion : MonoBehaviour
 {
-    public double PositionX,VelocityX,AccelerationX;
-    public double PositionY,VelocityY,AccelerationY;
+    public double PositionX,VelocityX;
+    public double PositionY,VelocityY;
     public double Speed,AccelerationXY;
 
 
@@ -22,8 +22,6 @@ public class BallMotion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AccelerationX=AccelerationXY;
-        AccelerationY=AccelerationXY;
         SetPositionX();
         SetPositionY();
         ChangeValues();
@@ -34,16 +32,16 @@ public class BallMotion : MonoBehaviour
     public void ChangeValues()
     {
         if(Input.GetKey("a")){
-            SetVelocityX(-AccelerationX);
+            SetVelocityX(-AccelerationXY);
         }
         if(Input.GetKey("d")){  
-            SetVelocityX(AccelerationX);
+            SetVelocityX(AccelerationXY);
         }
         if(Input.GetKey("w")){
-            SetVelocityY(AccelerationY);
+            SetVelocityY(AccelerationXY);
         }
         if(Input.GetKey("s")){
-            SetVelocityY(-AccelerationY);
+            SetVelocityY(-AccelerationXY);
         }
     }
     public void SetVelocityX(double acceleration)
