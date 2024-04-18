@@ -9,9 +9,7 @@ public class BallMotion : MonoBehaviour
     public double PositionX,VelocityX;
     public double PositionY,VelocityY;
     public double Speed,AccelerationXY;
-
-
-
+    public Vector3 mouse;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +25,7 @@ public class BallMotion : MonoBehaviour
         ChangeValues();
         transform.Translate ((float)VelocityX,(float)VelocityY,0f); 
         GetSpeed();
+        MoveCircleMouse();
     }
 
     public void ChangeValues()
@@ -66,6 +65,11 @@ public class BallMotion : MonoBehaviour
 
     public void GetSpeed(){
         Speed = math.sqrt(Math.Pow(Math.Abs(VelocityX),2)+Math.Pow(Math.Abs(VelocityY),2)); 
+    }
+
+    public void MoveCircleMouse()
+    {
+        mouse=Input.mousePosition;
     }
 }
 
