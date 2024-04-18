@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Unity Motion Project.sln"
+    "dotnet.defaultSolution": "Unity-Test-Project.sln"
 }
