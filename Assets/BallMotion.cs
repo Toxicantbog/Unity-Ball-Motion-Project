@@ -8,29 +8,33 @@ using Unity.VisualScripting;
 public class BallMotion : MonoBehaviour
 {
     public double PositionX,VelocityX,AccelerationX;
+    public double PositionY,VelocityY,AccelerationY;
     public Vector3 mouse;
-    public double Kp=0.001;
-    public double Ki=0.00001;
-    public double Kd=0.07;
-    double I,D;
-    double Error,PreviousError;
+    double Kp=0.015;
+    double Ki=0.0000001;
+    double Kd=0.1;
+    public double Ix,Dx,Iy,Dy;
+    double ErrorX,ErrorY,PreviousErrorX,PreviousErrorY;
 
     // Start is called before the first frame update
     void Start()
     {
         PositionX=370;
+        PositionY=165;
     }
 
     // Update is called once per frame
     void Update()
     {
         SetPositionX();
+        SetPositionY();
         MousePosition();
         RearrangePosition();
         MoveToPosition();
         Move();
-        transform.Translate ((float)VelocityX,0f,0f); 
-        PreviousError=Error;
+        transform.Translate ((float)VelocityX,(float)VelocityY,0f); 
+        PreviousErrorX=ErrorX;
+        PreviousErrorY=ErrorY;
     }
 
     public void SetPositionX()
@@ -38,16 +42,22 @@ public class BallMotion : MonoBehaviour
         PositionX += VelocityX;
     }
 
+    public void SetPositionY()
+    {
+        PositionY+=VelocityY;
+    }
     public void MousePosition()
     {
-        mouse=Input.mousePosition;
+        mouse[0]=(int)Math.Round(Input.mousePosition[0]);
+        mouse[1]=(int)Math.Round(Input.mousePosition[1]);
     }
 
     public void RearrangePosition()
     {
         if(Input.GetMouseButton(1))
         {
-            PositionX=mouse.x;
+            PositionX=mouse[0];
+            PositionY=mouse[1];
         }
     }
 
@@ -55,52 +65,63 @@ public class BallMotion : MonoBehaviour
     {
         if(Input.GetKey("q"))
         {
-            Error = mouse.x-PositionX;
-            I += Error;
-            D = Error-PreviousError;
-            AccelerationX=Kp*Error + Ki*I + Kd*D;
-            AccelerationLimit(AccelerationX);
-            if(Deadband())
+            if(Ix==0||Math.Abs(VelocityX)>0.1||Math.Abs(AccelerationX)>0.1||mouse[0]!=Math.Round(PositionX))
+            {
+                ErrorX = mouse[0]-PositionX;
+                Ix += ErrorX;
+                Dx = ErrorX-PreviousErrorX;
+                AccelerationX=Kp*ErrorX + Ki*Ix + Kd*Dx;
+            }
+            else
             {
                 VelocityX=0;
                 AccelerationX=0;
             }
+
+            if(Iy==0||Math.Abs(VelocityY)>0.1||Math.Abs(AccelerationY)>0.1||mouse[1]!=Math.Round(PositionY))
+            {
+                ErrorY = mouse[1]-PositionY;
+                Iy += ErrorY;
+                Dy = ErrorY-PreviousErrorY;
+                AccelerationY=Kp*ErrorY + Ki*Iy + Kd*Dy;    
+            }
+            else
+            {
+                VelocityY=0;
+                AccelerationY=0;
+            }
+            
         }
+        else
+        {
+            Iy=0;
+            Dy=0;
+            Ix=0;
+            Dx=0;
+        }
+
     }
 
     public void Move()
     {
         VelocityX+=AccelerationX;
+        VelocityY+=AccelerationY;
     }
 
-    public void AccelerationLimit(double acceleration)
+    public Boolean DeadbandX()
     {
-        if(acceleration>0.1)
+        if(Math.Abs(VelocityX)<0.001&&Math.Abs(AccelerationX)<0.001)
         {
-            AccelerationX=0.1;
+            return false;
         }
-        else if(acceleration<-0.1)
-        {
-            AccelerationX=-0.1;
-        }
+        return true;
     }
-
-    public double PID(double tempPositionX,double tempMousePosition)
+    public Boolean DeadbandY()
     {
-        Error = tempMousePosition-tempPositionX;
-        I += Error;
-        D = Error-PreviousError;
-        return Kp * Error + Ki * I + Kd * D;
-    }
-
-    public Boolean Deadband()
-    {
-        if(Math.Abs(VelocityX)<0.0001&&Math.Abs(AccelerationX)<0.00001)
+        if(Math.Abs(VelocityY)<0.001&&Math.Abs(AccelerationY)<0.001)
         {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }
-
-
